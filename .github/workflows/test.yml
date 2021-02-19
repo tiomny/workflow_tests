@@ -8,7 +8,7 @@ on:
 jobs:
     prepare_all:
         name: Initial operations
-        runs-on: [self-hosted, linux, rviclient]
+        runs-on: ubuntu-latest
         outputs:
           env: ${{ steps.vars.outputs.env }}
         steps:
@@ -26,7 +26,7 @@ jobs:
     buildbase:
         needs: prepare_all
         name: Build BASE Docker image if needed
-        runs-on: [self-hosted, linux, rviclient]
+        runs-on: ubuntu-latest
         env:
           ENVIRONMENT: ${{needs.prepare_all.outputs.env}}
         steps:
@@ -37,7 +37,7 @@ jobs:
     build:
         needs: [prepare_all, buildbase]
         name: Build Docker image
-        runs-on: [self-hosted, linux, rviclient]
+        runs-on: ubuntu-latest
         steps:
             - name: Debug build
               env:
