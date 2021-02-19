@@ -1,0 +1,46 @@
+name: VI Client - ALL
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+    prepare_all:
+        name: Initial operations
+        runs-on: [self-hosted, linux, rviclient]
+        outputs:
+          env: ${{ steps.vars.outputs.env }}
+        steps:
+        - name: Get branch name (merge)
+          if: github.event_name != 'pull_request'
+          run: echo "ENVIRONMENT=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+        - name: Get branch name (pull request)
+          if: github.event_name == 'pull_request'
+          run: echo "ENVIRONMENT=$(echo ${GITHUB_HEAD_REF} | tr / -)" >> $GITHUB_ENV
+
+        - id: vars
+          run: echo "::set-output name=env::$ENVIRONMENT"
+
+    buildbase:
+        needs: prepare_all
+        name: Build BASE Docker image if needed
+        runs-on: [self-hosted, linux, rviclient]
+        env:
+          ENVIRONMENT: ${{needs.prepare_all.outputs.env}}
+        steps:
+          - name: Debug base
+            run: |
+              echo $ENVIRONMENT
+              echo ${{needs.prepare_all.outputs.env}}
+    build:
+        needs: [prepare_all, buildbase]
+        name: Build Docker image
+        runs-on: [self-hosted, linux, rviclient]
+        steps:
+            - name: Debug build
+              env:
+                ENVIRONMENT: ${{needs.prepare_all.outputs.env}}
+              run: |
+                echo $ENVIRONMENT
