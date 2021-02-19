@@ -3,7 +3,7 @@ name: VI Client - ALL
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
     prepare_all:
